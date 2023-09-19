@@ -12,10 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class DatabaseTest {
     Superhero testman;
     Superhero hackerman;
-    Database database = new Database();
+    Database database;
 
     @BeforeEach
     void setup(){
+        database = new Database();
         testman = new Superhero("Testman","Test Testerson",
                 "Testing",2023,"No",10);
         hackerman = new Superhero("Hackerman","Hack Hackerson",

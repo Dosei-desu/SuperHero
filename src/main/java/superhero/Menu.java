@@ -12,6 +12,7 @@ public class Menu {
     final int PRINT_CHOICE = 2;
     final int SEARCH_CHOICE = 3;
     final int EDIT_CHOICE = 4;
+    final int REMOVE_CHOICE = 5;
     final int EXIT_CHOICE = 9;
     final int DEFAULT_CHOICE = 0;
 
@@ -37,6 +38,7 @@ public class Menu {
                 case PRINT_CHOICE -> printDatabase();
                 case SEARCH_CHOICE -> searchDatabase();
                 case EDIT_CHOICE -> editHero();
+                case REMOVE_CHOICE -> removeHero();
                 case EXIT_CHOICE -> exitProgram();
             }
         }while(choice != EXIT_CHOICE);
@@ -51,6 +53,7 @@ public class Menu {
                 2---\u001B[32mPrint Database\u001B[0m------------------------
                 3---\u001B[32mSearch Database\u001B[0m-----------------------
                 4---\u001B[32mEdit Hero\u001B[0m-----------------------------
+                5---\u001B[32mRemove Hero\u001B[0m---------------------------
                 9---\u001B[31mExit Program\u001B[0m--------------------------
                 ------------------------------------------
                 """);
@@ -127,6 +130,10 @@ public class Menu {
     }
 
     public void printDatabase(){
+        if(database.getSuperheroes().isEmpty()){
+            System.out.println("\u001B[31mDatabase is empty!\u001B[0m");
+            return;
+        }
         System.out.print("""
                 ------------------------------------------
                 You have chosen "Print Database".
@@ -137,6 +144,10 @@ public class Menu {
     }
 
     public void searchDatabase(){
+        if(database.getSuperheroes().isEmpty()){
+            System.out.println("\u001B[31mDatabase is empty!\u001B[0m");
+            return;
+        }
         scanner = new Scanner(System.in);
         System.out.print("""
                 ------------------------------------------
@@ -158,6 +169,10 @@ public class Menu {
     }
 
     public void editHero(){
+        if(database.getSuperheroes().isEmpty()){
+            System.out.println("\u001B[31mDatabase is empty!\u001B[0m");
+            return;
+        }
         scanner = new Scanner(System.in);
         ArrayList<Superhero> heroList = database.getSuperheroes();
         System.out.print("""
@@ -174,10 +189,14 @@ public class Menu {
         int selection;
         try {
             selection = scanner.nextInt();
+            scanner.nextLine(); //flush
+            if(selection <= 0 || selection > heroList.size()){
+                System.out.print("\u001B[31mInserted number is not an option!\u001B[0m");
+                return;
+            }
         }
         catch(InputMismatchException e){
             System.out.print("\u001B[31mMust input a number!\u001B[0m");
-            scanner.nextLine(); //flush
             return;
         }
         Superhero selectedHero = heroList.get(selection-1); //removing 1 from the number to match index
@@ -192,7 +211,6 @@ public class Menu {
                 ------------------------------------------
                 """,selectedHero);
         System.out.print("Hero name: "+selectedHero.getName()+"\nNew name: ");
-        scanner.nextLine(); //flush "nextInt()" input
         String name = scanner.nextLine();
         if(name.isEmpty()){
             name = selectedHero.getName();
@@ -251,6 +269,44 @@ public class Menu {
                 %s
                 ------------------------------------------
                 """,newHero);
+    }
+
+    public void removeHero(){
+        if(database.getSuperheroes().isEmpty()){
+            System.out.println("\u001B[31mDatabase is empty!\u001B[0m");
+            return;
+        }
+        scanner = new Scanner(System.in);
+        System.out.print("""
+                ------------------------------------------
+                You have chosen "Remove Hero".
+                Please enter the number of the hero that
+                you would like to remove:
+                \u001B[31mThis choice is final and cannot be undone!\u001B[0m
+                ------------------------------------------
+                """);
+        for (int i = 0; i < database.getSuperheroes().size(); i++) {
+            System.out.println((i+1)+"---"+database.getSuperheroes().get(i));
+        }
+        System.out.print("------------------------------------------\n");
+        int selection;
+        try {
+            selection = scanner.nextInt();
+            scanner.nextLine(); //flush
+            if(selection <= 0 || selection > database.getSuperheroes().size()){
+                System.out.print("\u001B[31mInserted number is not an option!\u001B[0m");
+                return;
+            }
+        }
+        catch(InputMismatchException e){
+            System.out.print("\u001B[31mMust input a number!\u001B[0m");
+            return;
+        }
+        Superhero deletedHero = database.getSuperheroes().get(selection-1);
+        database.removeSuperhero(deletedHero);
+        System.out.print("------------------------------------------\n");
+        System.out.println("\u001B[31mRemoved!\u001B[0m");
+        System.out.print("\n------------------------------------------");
     }
 
     public void exitProgram(){
